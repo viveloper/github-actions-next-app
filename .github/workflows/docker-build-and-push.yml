@@ -1,0 +1,32 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Docker 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Docker 이미지 빌드
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ vars.DOCKERHUB_USERNAME }}/nextjs-app:latest .
+
+      # 4. Docker Hub에 푸시
+      - name: Push Docker image
+        run: |
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/nextjs-app:latest
